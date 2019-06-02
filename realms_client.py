@@ -161,11 +161,14 @@ class Client(object):
         save_path = os.path.join(backup_folder, backup_filename)
         with requests.get(download_url, stream=True) as r:
             r.raise_for_status()
+            transferred = 0
             with open(save_path, 'wb') as backup_file:
                 logging.info('Saving backup to %s', save_path)
                 for chunk in r.iter_content(chunk_size=CHUNK_BUFFER_SIZE):
                     if chunk:
                         backup_file.write(chunk)
+                        transferred += CHUNK_BUFFER_SIZE
+                        print(f'... {transferred/1024/1024} MB')
                 backup_file.flush()
             logging.info('Save complete.')
 
