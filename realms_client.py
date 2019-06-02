@@ -183,20 +183,36 @@ class Client(object):
 
 
 if __name__ == "__main__":
+    def world_index_range(value):
+        return isinstance(value, int) and 1 <= value <= 4
+
     try:
         logging.getLogger().setLevel(logging.INFO)
         parser = argparse.ArgumentParser(description='Automation tool for Minecraft Realms.')
         parser.add_argument('--username', default=os.environ.get('MINECRAFT_USERNAME'))
         parser.add_argument('--email', default=os.environ.get('MINECRAFT_USER_EMAIL'))
         parser.add_argument('--password', default=os.environ.get('MINECRAFT_PASSWORD'))
+        parser.add_argument('--latest-backup', action='store_true', help='Download latest backup.')
+        parser.add_argument('--save-path', default=os.getcwd(), help='Where to save latest backup.')
+        parser.add_argument('--world-index', type=world_index_range, default=1,
+                            help='Index of world 1-4, defaults to 1')
+        parser.add_argument('--worlds', action='store_true', help='Print worlds\' information.')
         args = parser.parse_args()
         if not args.username or not args.email or not args.password:
+            # Missing obligatory values for any command.
+            exit(parser.print_help())
+        elif not any([args.latest_backup, args.worlds]):
+            # Missing any actionable command, no need to start up session.
             exit(parser.print_help())
 
         with Client(username=args.username, email=args.email, password=args.password) as client:
-            worlds = client.get_worlds()
-            print(repr(worlds))
-            client.get_latest_backup()
+            if args.worlds:
+                # show world information
+                print(client.get_worlds())
+            if args.latest_backup:
+                # download latest backup using default or supplied options
+                client.get_latest_backup(index=args.world_index, backup_folder=args.save_path)
+
     except Exception:
         logging.exception('Unhandled error occured, see trace.')
         raise
