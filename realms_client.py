@@ -20,6 +20,7 @@ import requests
 import json
 import logging
 import uuid
+import argparse
 
 
 AUTH_SERVER = 'https://authserver.mojang.com'
@@ -43,7 +44,6 @@ class Session(object):
         self.auth_uri = AUTH_SERVER
         self.token = None
         self.logged_in = False
-
 
     @staticmethod
     @lru_cache(maxsize=32)
@@ -185,10 +185,15 @@ class Client(object):
 if __name__ == "__main__":
     try:
         logging.getLogger().setLevel(logging.INFO)
-        REALM_OWNER_USERNAME = os.environ.get('MINECRAFT_USERNAME')
-        REALM_OWNER_EMAIL = os.environ.get('MINECRAFT_USER_EMAIL')
-        REALM_PASSWORD = os.environ.get('MINECRAFT_PASSWORD')
-        with Client(username=REALM_OWNER_USERNAME, email=REALM_OWNER_EMAIL, password=REALM_PASSWORD) as client:
+        parser = argparse.ArgumentParser(description='Automation tool for Minecraft Realms.')
+        parser.add_argument('--username', default=os.environ.get('MINECRAFT_USERNAME'))
+        parser.add_argument('--email', default=os.environ.get('MINECRAFT_USER_EMAIL'))
+        parser.add_argument('--password', default=os.environ.get('MINECRAFT_PASSWORD'))
+        args = parser.parse_args()
+        if not args.username or not args.email or not args.password:
+            exit(parser.print_help())
+
+        with Client(username=args.username, email=args.email, password=args.password) as client:
             worlds = client.get_worlds()
             print(repr(worlds))
             client.get_latest_backup()
