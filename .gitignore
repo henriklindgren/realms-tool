@@ -107,4 +107,4 @@ venv.bak/
 .idea/
 
 # application
-backups/
+mcr_world.tar.gz
