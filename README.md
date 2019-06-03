@@ -35,5 +35,6 @@ optional arguments:
 
 Print information about worlds
 `./realms_client.py --username herobrine --email example@example.com --password hunter1 --worlds`
+
 Download latest backup for world in slot 1 to current working directory
 `./realms_client.py --username herobrine --email example@example.com --password hunter1 --latest-backup`
