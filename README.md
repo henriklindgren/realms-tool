@@ -1,8 +1,5 @@
 # realms-tool
 
-This is a work in progress.
-
-
 ### Dependencies
 python 3.6+
 
